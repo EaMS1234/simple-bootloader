@@ -35,7 +35,7 @@ mov al, [0x7e00]
 int 0x10
 
 ; Loads the GDT
-lgdt [gdt]
+lgdt [gdt_descriptor]
 
 ; Infinite loop to keep the CPU running
 jmp $
