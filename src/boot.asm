@@ -56,7 +56,7 @@ gdt:
         db 0
 
         ; Present, Privilege, Type = 1001 + flags = 1010
-        db 0b10011001
+        db 0b10011010
 
         ; Other flags + last four bits (1s)
         db 0b11001111
