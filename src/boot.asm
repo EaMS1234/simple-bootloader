@@ -8,6 +8,10 @@
 disk equ 0
 mov [disk], dl
 
+; Saves the address of the code and data segments as variables
+code_segment equ code_descriptor - gdt
+data_segment equ data_descriptor - gdt
+
 mov ah, 0x0e
 mov al, '!'
 int 0x10
@@ -30,8 +34,57 @@ mov ah, 0x0e
 mov al, [0x7e00]
 int 0x10
 
+; Loads the GDT
+lgdt [gdt]
+
 ; Infinite loop to keep the CPU running
 jmp $
+
+; Global Descriptor Table (Flat model) ---
+gdt:
+    null_descriptor:
+        ; 8 empty bytes
+        dd 0
+        dd 0
+    
+    code_descriptor:
+        ; Segment limit (16 bit)
+        dw 0xffff
+
+        ; Base's first 24 bits
+        dw 0
+        db 0
+
+        ; Present, Privilege, Type = 1001 + flags = 1010
+        db 0b10011001
+
+        ; Other flags + last four bits (1s)
+        db 0b11001111
+
+        ; base last 8 bits
+        db 0
+    
+    data_descriptor:
+        dw 0xffff
+        dw 0
+        db 0
+
+        ; Present, Privilege, Type = 1001 + flags = 0010
+        db 0b10010010
+
+        ; Other flags + last four bits (1s)
+        db 0b11001111
+
+        db 0
+    
+gdt_end:
+
+gdt_descriptor:
+    ; gdt size
+    dw gdt_end - gdt - 1
+    
+    ; gdt start
+    dd gdt
 
 ; Fills the rest of the sector with zeroes
 times 510 - ($-$$) db 0
