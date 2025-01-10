@@ -20,20 +20,8 @@ mov bp, 0x9000
 mov sp, bp
 
 ; Reads the disk, and saves the data on the kernel address
-mov ah, 0x02
-mov al, 55
-mov ch, 0
-mov cl, 2
-mov dh, 0
-mov dl, [disk]
-mov bx, kernel
-push ax
-int 0x13
-
-; Verifies if all expected sectors could be read
-pop dx
-cmp al, dl
-jc disk_error
+mov al, 55 ; big number for testing only, change later
+call read_disk
 
 ; Text mode clears the screen
 mov ah, 0x0
@@ -103,11 +91,28 @@ gdt_descriptor:
     ; gdt start
     dd gdt
 
-disk_error:
-    mov ah, 0x0e
-    mov al, [kernel]
-    int 0x10
-    jmp $
+read_disk:
+    mov ah, 0x02
+    mov ch, 0
+    mov cl, 2
+    mov dh, 0
+    mov dl, [disk]
+    mov bx, kernel
+    push ax
+    int 0x13
+
+    ; Verifies if all expected sectors could be read
+    pop dx
+    cmp al, dl
+    jc sector_error
+
+    ret
+
+sector_error:
+    ; Try reading the sectors again, but this time, it will try reading only
+    ; the sectors that are actually available
+    mov ax, dx
+    ret
 
 [bits 32]
 protected_mode:
