@@ -20,7 +20,7 @@ mov bp, 0x9000
 mov sp, bp
 
 ; Reads the disk, and saves the data on the kernel address
-mov al, 55 ; big number for testing only, change later
+mov al, 20 ; big number for testing only, change later
 call read_disk
 
 ; Text mode clears the screen
@@ -116,17 +116,19 @@ sector_error:
 
 [bits 32]
 protected_mode:
-    ; TESTING - Prints the character # in white by writing directly over video memory
-    mov al, '#'
-    mov ah, 0x0f
-    mov [0xb8000], ax
-    jmp $
+    mov ax, data_segment
+    mov ds, ax
+    mov ss, ax
+    mov es, ax
+    mov fs, ax
+    mov gs, ax
+    mov ebp, 0x90000
+    mov esp, ebp
+
+    jmp kernel
 
 ; Fills the rest of the sector with zeroes
 times 510 - ($-$$) db 0
 
 ; Adds a word containing the BIOS' Magic Number in the end
 dw 0xaa55
-
-; TESTING - writes an entire sector with data to be read by the bootloader
-times 512 db 'E'
