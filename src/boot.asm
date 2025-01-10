@@ -12,30 +12,47 @@ mov [disk], dl
 code_segment equ code_descriptor - gdt
 data_segment equ data_descriptor - gdt
 
-mov ah, 0x0e
-mov al, '!'
-int 0x10
-
 ; 4 kb kernel offset
 kernel equ 0x1000
 
-; TESTING - Reads the disk, and saves the data on it from 0x7e00 onwards
+; Sets the stack up
+mov bp, 0x9000
+mov sp, bp
+
+; Reads the disk, and saves the data on the kernel address
 mov ah, 0x02
-mov al, 1
+mov al, 55
 mov ch, 0
 mov cl, 2
 mov dh, 0
 mov dl, [disk]
-mov bx, 0x7e00
+mov bx, kernel
+push ax
 int 0x13
 
-; Prints the character at 0x7e00
-mov ah, 0x0e
-mov al, [0x7e00]
+; Verifies if all expected sectors could be read
+pop dx
+cmp al, dl
+jc disk_error
+
+; Text mode clears the screen
+mov ah, 0x0
+mov al, 0x3
 int 0x10
+
+; Disables bios interruptions
+cli
 
 ; Loads the GDT
 lgdt [gdt_descriptor]
+
+; Changes the last bit in CR0 to 1 
+mov eax, cr0
+or eax, 1
+mov cr0, eax
+
+; Jumps into the 32 bit section
+jmp code_segment:protected_mode
 
 ; Infinite loop to keep the CPU running
 jmp $
@@ -86,6 +103,20 @@ gdt_descriptor:
     ; gdt start
     dd gdt
 
+disk_error:
+    mov ah, 0x0e
+    mov al, [kernel]
+    int 0x10
+    jmp $
+
+[bits 32]
+protected_mode:
+    ; TESTING - Prints the character # in white by writing directly over video memory
+    mov al, '#'
+    mov ah, 0x0f
+    mov [0xb8000], ax
+    jmp $
+
 ; Fills the rest of the sector with zeroes
 times 510 - ($-$$) db 0
 
@@ -93,4 +124,4 @@ times 510 - ($-$$) db 0
 dw 0xaa55
 
 ; TESTING - writes an entire sector with data to be read by the bootloader
-times 512 db 'g'
+times 512 db 'E'
