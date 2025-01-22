@@ -20,7 +20,7 @@ mov bp, 0x9000
 mov sp, bp
 
 ; Reads the disk, and saves the data on the kernel address
-mov al, 20 ; big number for testing only, change later
+mov al, 20
 call read_disk
 
 ; Text mode clears the screen
