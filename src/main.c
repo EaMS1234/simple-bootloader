@@ -1,4 +1,4 @@
-#include "lib/io.h"
+#include "lib/text.h"
 
 extern void main()
 {
