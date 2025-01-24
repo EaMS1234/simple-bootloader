@@ -27,6 +27,11 @@ void print(char * string, int color)
 void next_char()
 {
     term_x += 1;
+
+    if (term_x >= 80)
+    {
+        next_line();
+    }
 }
 
 void next_line()
