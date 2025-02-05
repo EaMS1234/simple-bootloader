@@ -16,11 +16,16 @@ extern void main()
     }
     else
     {
-        print("Found ID ", 7);
+        print("Found ", 7);
         outb(0x60, 0xf2);
 
         // Responds with 0xfa + keyboard id
-        print_hex(0xfa - inb(0x60), 7);
+        inb(0x60);
+        print_hex(inb(0x60), 7);
+        print(" (", 7);
+        print_hex(inb(0x60), 7);
+        print(") ", 7);
+
         print("\n", 7);
     }
 }
