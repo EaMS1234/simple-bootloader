@@ -39,11 +39,24 @@ void print_int(int num, int color)
     // Represents the divisor for the current operation.
     // It must always be a power of 10.
     int divisor = 1;
+    int negative = 0;
+
+    if (num < 0)
+    {
+        num = num * -1;
+        negative = 1;
+    }
 
     // Checks the maximum number the divisor can be
     while (divisor * 10 <= num)
     {
         divisor = divisor * 10;
+    }
+
+    if (negative)
+    {
+        putchar('-', color);
+        term_x += 1;
     }
 
     // Decomposes the number and prints on screen

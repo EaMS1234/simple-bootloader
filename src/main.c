@@ -10,4 +10,7 @@ extern void main()
     {
         print_int(i, i);
     }
+
+    print("\n", 7);
+    print_int(-827, 7);
 }
