@@ -4,6 +4,5 @@ extern void main()
 {
     print("Welcome to ", 7);
     print("Simple-Bootloader", 3);
-    print("!\n", 7);
-    next_line();
+    print("!\n\n", 7);
 }

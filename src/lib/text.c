@@ -1,16 +1,15 @@
 #include "io.h"
 
 void print(char * string, int color);
-void next_char();
+void putchar(char character, int color);
 void next_line();
 void update_cursor_pos();
 
 int term_x, term_y = 0;
 
+// Prints a string
 void print(char * string, int color)
 {
-    char *video = (char*)0xb8000;
-
     while (*string != 0)
     {
         if (*string == '\n')
@@ -20,23 +19,28 @@ void print(char * string, int color)
         }
         else
         {
-            *(video + (term_x * 2) + (term_y * 160)) = *string++;
-            *(video + (term_x * 2) + (term_y * 160) + 1) = color;
-            next_char();
+            putchar(*string++, color);
+
+            term_x += 1;
+
+            if (term_x >= 80)
+            {
+                next_line();
+            }
         }
     }
 
     update_cursor_pos();
 }
 
-void next_char()
+// Puts a character on the current cursor position
+void putchar(char character, int color)
 {
-    term_x += 1;
+    // Writes characters directly into video mode memory space
+    char *video = (char*)0xb8000;
 
-    if (term_x >= 80)
-    {
-        next_line();
-    }
+    *(video + (term_x * 2) + (term_y * 160)) = character;
+    *(video + (term_x * 2) + (term_y * 160) + 1) = color;
 }
 
 void next_line()
