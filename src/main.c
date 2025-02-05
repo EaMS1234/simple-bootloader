@@ -1,4 +1,5 @@
 #include "lib/text.h"
+#include "lib/io.h"
 
 extern void main()
 {
@@ -6,11 +7,18 @@ extern void main()
     print("Simple-Bootloader", 3);
     print("!\n\n", 7);
 
-    for (int i = 0; i <= 16; i++)
-    {
-        print_int(i, i);
-    }
+    print("Looking for keyboard on 0x60... ", 7);
 
-    print("\n", 7);
-    print_int(-827, 7);
+    outb(0x60, 0xee);
+    if (inb(0x60) != 0xee)
+    {
+        print("Failed!\n", 7);
+    }
+    else
+    {
+        print("Found ID ", 7);
+        outb(0x60, 0xf2);
+        print_int(inb(0x60), 7);
+        print("\n", 7);
+    }
 }
