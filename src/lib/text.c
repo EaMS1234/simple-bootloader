@@ -2,6 +2,7 @@
 
 void print(char * string, int color);
 void print_int(int num, int color);
+void print_hex(unsigned int num, int color);
 void putchar(char character, int color);
 void next_line();
 void update_cursor_pos();
@@ -69,6 +70,69 @@ void print_int(int num, int color)
         divisor = divisor / 10;
     
         // Prevents not putting the zero after decomposing the number
+        if (num == 0 && divisor == 1)
+        {
+            putchar('0', color);
+            term_x += 1;   
+        }
+
+    } while (num != 0);
+
+    update_cursor_pos();
+}
+
+// Prints values in hexadecimal. Adapted from print_int()
+void print_hex(unsigned int num, int color)
+{
+    print("0x", color);
+
+    int divisor = 1;
+    char temp = '\0';
+
+    while (divisor * 16 <= num)
+    {
+        divisor = divisor * 16;
+    }
+
+    do
+    {
+        switch ((num / divisor))
+        {
+        case 10:
+            temp = 'a';
+            break;
+
+        case 11:
+            temp = 'b';
+            break;
+
+        case 12:
+            temp = 'c';
+            break;
+
+        case 13:
+            temp = 'd';
+            break;
+
+        case 14:
+            temp = 'e';
+            break;
+
+        case 15:
+            temp = 'f';
+            break;
+
+        default:
+            temp = (char) 48 + (num / divisor);
+            break;
+        }
+
+        putchar(temp, color);
+        term_x += 1;
+
+        num = num - divisor * (num / divisor);
+        divisor = divisor / 16;
+    
         if (num == 0 && divisor == 1)
         {
             putchar('0', color);

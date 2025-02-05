@@ -18,7 +18,9 @@ extern void main()
     {
         print("Found ID ", 7);
         outb(0x60, 0xf2);
-        print_int(inb(0x60), 7);
+
+        // Responds with 0xfa + keyboard id
+        print_hex(0xfa - inb(0x60), 7);
         print("\n", 7);
     }
 }
