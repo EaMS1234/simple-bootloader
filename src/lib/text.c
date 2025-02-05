@@ -1,6 +1,7 @@
 #include "io.h"
 
 void print(char * string, int color);
+void print_int(int num, int color);
 void putchar(char character, int color);
 void next_line();
 void update_cursor_pos();
@@ -29,6 +30,39 @@ void print(char * string, int color)
             }
         }
     }
+
+    update_cursor_pos();
+}
+
+void print_int(int num, int color)
+{
+    // Represents the divisor for the current operation.
+    // It must always be a power of 10.
+    int divisor = 1;
+
+    // Checks the maximum number the divisor can be
+    while (divisor * 10 <= num)
+    {
+        divisor = divisor * 10;
+    }
+
+    // Decomposes the number and prints on screen
+    do
+    {
+        putchar((char) 48 + (num / divisor), color);
+        term_x += 1;
+
+        num = num - divisor * (num / divisor);
+        divisor = divisor / 10;
+    
+        // Prevents not putting the zero after decomposing the number
+        if (num == 0 && divisor == 1)
+        {
+            putchar('0', color);
+            term_x += 1;   
+        }
+
+    } while (num != 0);
 
     update_cursor_pos();
 }
